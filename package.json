@@ -1,0 +1,25 @@
+{
+  "name": "cpsc525-cwe285",
+  "version": "1.0.0",
+  "description": "CPSC 525 Final Project: A deliberately vulnerable application demonstrating CWE-285 (Improper Authorization). Includes insecure implementation, exploitation example, fixed code, and documentation.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/suibasultana/cpsc525-cwe285.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/suibasultana/cpsc525-cwe285/issues"
+  },
+  "homepage": "https://github.com/suibasultana/cpsc525-cwe285#readme",
+  "dependencies": {
+    "body-parser": "^2.2.1",
+    "express": "^5.2.1",
+    "express-session": "^1.18.2"
+  }
+}
