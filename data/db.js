@@ -12,8 +12,8 @@ module.exports = {
     ],
 
     messages: [
-        { id: 1, senderId: 1, receiverId: 2, content: "Hi Sukhpreet!" },
-        { id: 2, senderId: 2, receiverId: 1, content: "Hey Suiba!" },
-        { id: 3, senderId: 3, receiverId: 1, content: "Hello Suiba, how is the project going?" }
+        { id: 1, senderId: 1, receiverId: 2, content: "Hi Sukhpreet!", flag: "none" },
+        { id: 2, senderId: 2, receiverId: 1, content: "Hey Suiba!", flag: "none" },
+        { id: 3, senderId: 3, receiverId: 1, content: "Hello Suiba, how is the project going?", flag: "none"}
     ]
 };

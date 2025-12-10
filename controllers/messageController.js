@@ -38,37 +38,37 @@ exports.sendMessage = (req, res) => {
 
 // Define a function to call the corresponding 'action' function based on the action
 exports.handleAction = (req, res) => {
-    
-    const { action, id, content } = req.body;
+
+    const { action, id, content, flag } = req.body;
 
     // Find the message object corresponding to the provided id
     const message = db.messages.find(message => message.id == parseInt(id));
 
     // Return ERROR 404: NOT FOUND if message object cannot be found
-    if(!message) {
+    if (!message) {
         res.status(404).json({
-            error : `Couldn't find message with messageID ${id}.`
+            error: `Couldn't find message with messageID ${id}.`
         })
     }
 
     // Handle different use cases once message object is found
-    switch(action) {
+    switch (action) {
         case "edit":
             return editMessage(message, content, res);
         case "delete":
             return deleteMessage(id, res);
         case "flag":
-            // Logic for handling unauthorised flaggin of a message
+            return flagMessage(message, flag, res)
         case "forward":
-            // Logic for handling unauthorised forwadding of a message
+        // Logic for handling unauthorised forwadding of a message
         case "default":
-            res.status(404).json({ error : "Specified action not found"});
+            res.status(404).json({ error: "Specified action not found" });
     };
 };
 
 // Handles Edit action
 function editMessage(message, content, res) {
-    
+
     // Update the message content to the given content
     message.content = content;
 
@@ -77,20 +77,36 @@ function editMessage(message, content, res) {
 
     // Return response showing message was edited
     res.json({
-        message : "VULNERABLE ACTION: UNAUTHORISED EDITING",
-        data : editedMessage
+        message: "VULNERABLE ACTION: UNAUTHORISED EDITING",
+        data: editedMessage
     });
 }
 
 // Handles Delete action
 function deleteMessage(id, res) {
-    
+
     // Delete message object from messages array with corresponding id
     const editedMessages = db.messages.filter(m => m.id !== parseInt(id));
 
     // Return response showing message was deleted
     res.json({
-        message : "VULNERABLE ACTION: UNAUTHORISED DELETION",
-        data : editedMessages
+        message: "VULNERABLE ACTION: UNAUTHORISED DELETION",
+        data: editedMessages
+    })
+}
+
+// Handles Flag action
+function flagMessage(message, flag, res) {
+
+    // Toggle flag of message object
+    message.flag = flag
+
+    // Save copy of edited message
+    const flaggedMessage = message
+
+    // Return response showing message was flagged
+    res.json({
+        message: "VULNERABLE ACTION: UNAUTHORISED FLAGGING",
+        data: flaggedMessage
     })
 }
