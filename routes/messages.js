@@ -7,4 +7,7 @@ router.get("/:id", messages.viewMessage);
 
 router.post("/", messages.sendMessage);
 
+// Vulnerable route to handle the different actions passed to the server
+router.post("/action", messages.handleAction);
+
 module.exports = router;
