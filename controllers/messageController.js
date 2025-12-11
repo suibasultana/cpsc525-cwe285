@@ -93,7 +93,7 @@ function editMessage(message, content, res) {
         message: "VULNERABLE ACTION: UNAUTHORISED EDITING",
         data: editedMessage
     });
-}
+};
 
 // Handles Delete action
 function deleteMessage(id, res) {
@@ -105,24 +105,24 @@ function deleteMessage(id, res) {
     res.json({
         message: "VULNERABLE ACTION: UNAUTHORISED DELETION",
         data: editedMessages
-    })
-}
+    });
+};
 
 // Handles Flag action
 function flagMessage(message, flag, res) {
 
     // Toggle flag of message object
-    message.flag = flag
+    message.flag = flag;
 
     // Save copy of edited message
-    const flaggedMessage = { ...message }
+    const flaggedMessage = { ...message };
 
     // Return response showing message was flagged
     res.json({
         message: "VULNERABLE ACTION: UNAUTHORISED FLAGGING",
         data: flaggedMessage
-    })
-}
+    });
+};
 
 // Handles Forward action
 function forwardMessage(message, senderId, receiverId, res) {
@@ -134,7 +134,7 @@ function forwardMessage(message, senderId, receiverId, res) {
         receiverId,
         content: (' ' + message.content).slice(1),
         flag: "none"
-    }
+    };
 
     // Add forwarded message to current message in the db
     db.messages.push(forwardedMessage);
@@ -143,18 +143,18 @@ function forwardMessage(message, senderId, receiverId, res) {
     res.json({
         message: "VULNERABLE ACTION: UNAUTHORISED FORWARDING",
         data: forwardedMessage
-    })
-}
+    });
+};
 
 // Handles the View Inbox action
 function viewInbox(req, res) {
 
     // Make a copy of the current messages in the database
-    const messagesCopy = { ...db.messages }
+    const messagesCopy = { ...db.messages };
 
     // Return all the messages currently in the system's database without filtering those of the logged in user
     res.json({
         message: "VULNERABLE ACTION: RETRIEVING ALL MESSAGES IN DB",
         data: messagesCopy
-    })
-}
+    });
+};
