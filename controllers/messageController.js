@@ -28,7 +28,8 @@ exports.sendMessage = (req, res) => {
         id: db.messages.length + 1,
         senderId,
         receiverId,
-        content
+        content,
+        flag: "none"
     };
 
     db.messages.push(newMessage);
@@ -39,7 +40,11 @@ exports.sendMessage = (req, res) => {
 // Define a function to call the corresponding 'action' function based on the action
 exports.handleAction = (req, res) => {
 
-    const { action, id, content, flag } = req.body;
+    // Get the currently logged in userId
+    const loggedInId = req.session.userId;
+
+    // Extract values of parameters from the request's body
+    const { action, id, content, flag, targetSenderId} = req.body;
 
     // Find the message object corresponding to the provided id
     const message = db.messages.find(message => message.id == parseInt(id));
@@ -58,9 +63,9 @@ exports.handleAction = (req, res) => {
         case "delete":
             return deleteMessage(id, res);
         case "flag":
-            return flagMessage(message, flag, res)
+            return flagMessage(message, flag, res);
         case "forward":
-        // Logic for handling unauthorised forwadding of a message
+            return forwardMessage(message, loggedInId, parseInt(targetSenderId), res);
         case "default":
             res.status(404).json({ error: "Specified action not found" });
     };
@@ -108,5 +113,29 @@ function flagMessage(message, flag, res) {
     res.json({
         message: "VULNERABLE ACTION: UNAUTHORISED FLAGGING",
         data: flaggedMessage
+    })
+}
+
+// Handles Forward action
+function forwardMessage(message, senderId, receiverId, res) {
+
+    console.log("Sender ID", senderId);
+    console.log("Receiver ID", receiverId);
+    // Generate message that will be forward to user to store it in db.js
+    const newMessage = {
+        id : db.messages.length + 1,
+        senderId,
+        receiverId,
+        content : message.content,
+        flag : "none"
+    }
+
+    // Add forwarded message to current message in the db
+    db.messages.push(newMessage);
+
+    // Return response showing message was forwarded
+    res.json({
+        message: "VULNERABLE ACTION: UNAUTHORISED FORWARDING",
+        data: db.messages
     })
 }
