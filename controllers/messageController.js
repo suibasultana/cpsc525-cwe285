@@ -90,7 +90,7 @@ function editMessage(message, content, res) {
 
     // Return response showing message was edited
     res.json({
-        message: "VULNERABLE ACTION: UNAUTHORISED EDITING",
+        message: "VULNERABLE ACTION: UNAUTHORIZED EDITING",
         data: editedMessage
     });
 };
@@ -103,7 +103,7 @@ function deleteMessage(id, res) {
 
     // Return response showing message was deleted
     res.json({
-        message: "VULNERABLE ACTION: UNAUTHORISED DELETION",
+        message: "VULNERABLE ACTION: UNAUTHORIZED DELETION",
         data: editedMessages
     });
 };
@@ -119,7 +119,7 @@ function flagMessage(message, flag, res) {
 
     // Return response showing message was flagged
     res.json({
-        message: "VULNERABLE ACTION: UNAUTHORISED FLAGGING",
+        message: "VULNERABLE ACTION: UNAUTHORIZED FLAGGING",
         data: flaggedMessage
     });
 };
@@ -136,25 +136,218 @@ function forwardMessage(message, senderId, receiverId, res) {
         flag: "none"
     };
 
+
     // Add forwarded message to current message in the db
     db.messages.push(forwardedMessage);
 
     // Return response showing message was forwarded
     res.json({
-        message: "VULNERABLE ACTION: UNAUTHORISED FORWARDING",
+        message: "VULNERABLE ACTION: UNAUTHORIZED FORWARDING.",
         data: forwardedMessage
     });
 };
 
-// Handles the View Inbox action
+// Handles the View Inbox action.
 function viewInbox(req, res) {
 
-    // Make a copy of the current messages in the database
+    // Making a copy of the current messages in the database.
     const messagesCopy = { ...db.messages };
 
-    // Return all the messages currently in the system's database without filtering those of the logged in user
+    // Returning all the messages currently in the system's database without filtering those of the logged in user.
     res.json({
         message: "VULNERABLE ACTION: RETRIEVING ALL MESSAGES IN DB",
         data: messagesCopy
     });
 };
+
+
+
+
+
+// ======================== SECURE HELPER FUNCTIONS ========================
+
+function getLoggedInUserId(req, res) {
+    if (!req.session || !req.session.userId) {
+        res.status(401).json({ error: "Not authenticated." });
+        return null;
+    }
+    return req.session.userId;
+}
+
+function findMessageByIdOrSendError(id, res) {
+    const messageId = parseInt(id, 10);
+
+    if (Number.isNaN(messageId)) {
+        res.status(400).json({ error: "Invalid message id." });
+        return null;
+    }
+
+    const msg = db.messages.find(m => m.id === messageId);
+
+    if (!msg) {
+        res.status(404).json({ error: "Message not found." });
+        return null;
+    }
+
+    return msg;
+}
+
+function userCanAccessMessage(userId, msg) {
+    return msg.senderId === userId || msg.receiverId === userId;
+}
+
+
+
+
+// ======================== SECURE ENDPOINTS ========================
+
+// Secure version of viewMessage
+exports.viewMessageSecure = (req, res) => {
+    const userId = getLoggedInUserId(req, res);
+    if (!userId) return;
+
+    const msg = findMessageByIdOrSendError(req.params.id, res);
+    if (!msg) return;
+
+    if (!userCanAccessMessage(userId, msg)) {
+        return res.status(403).json({
+            error: "Access denied: you are not allowed to view this message."
+        });
+    }
+
+    res.json({
+        message: "SECURE ENDPOINT",
+        details: msg
+    });
+};
+
+
+
+// Secure version of handleAction.
+exports.handleActionSecure = (req, res) => {
+    const userId = getLoggedInUserId(req, res);
+    if (!userId) return;
+
+    let message = null;
+
+    const { action, id, content, flag, targetSenderId } = req.body;
+
+    // Actions that need a specific message.
+    const actionsRequiringMessage = ["edit", "delete", "flag", "forward"];
+
+    if (actionsRequiringMessage.includes(action)) {
+        if (!id) {
+            return res.status(400).json({ error: "Message id is required for this action." });
+        }
+
+        message = findMessageByIdOrSendError(id, res);
+        if (!message) return;
+
+        if (!userCanAccessMessage(userId, message)) {
+            return res.status(403).json({
+                error: "Access denied: you cannot modify this message."
+            });
+        }
+    }
+
+    switch (action) {
+        case "edit":
+            return secureEditMessage(message, content, res);
+
+        case "delete":
+            return secureDeleteMessage(id, res);
+
+        case "flag":
+            return secureFlagMessage(message, flag, res);
+
+        case "forward":
+            return secureForwardMessage(message, userId, parseInt(targetSenderId, 10), res);
+
+        case "inbox":
+            return secureViewInbox(userId, res);
+
+        default:
+            return res.status(404).json({ error: "Specified action not found." });
+    }
+};
+
+
+
+// ================== SECURE ACTION IMPLEMENTATIONS ==================
+
+function secureEditMessage(message, content, res) {
+    if (!content) {
+        return res.status(400).json({ error: "New content is required to edit message." });
+    }
+
+    message.content = String(content);
+    const editedMessage = { ...message };
+
+    res.json({
+        message: "SECURE ACTION: message edited.",
+        data: editedMessage
+    });
+}
+
+function secureDeleteMessage(id, res) {
+    const messageId = parseInt(id, 10);
+
+    const index = db.messages.findIndex(m => m.id === messageId);
+    if (index === -1) {
+        return res.status(404).json({ error: "Message not found." });
+    }
+
+    const deleted = db.messages[index];
+    db.messages.splice(index, 1);
+
+    res.json({
+        message: "SECURE ACTION: message deleted.",
+        data: deleted
+    });
+}
+
+function secureFlagMessage(message, flag, res) {
+    if (!flag) {
+        return res.status(400).json({ error: "Flag value is required." });
+    }
+
+    message.flag = String(flag);
+    const flaggedMessage = { ...message };
+
+    res.json({
+        message: "SECURE ACTION: message flagged.",
+        data: flaggedMessage
+    });
+}
+
+function secureForwardMessage(message, senderId, receiverId, res) {
+    if (!receiverId) {
+        return res.status(400).json({ error: "Target receiverId is required." });
+    }
+
+    const forwardedMessage = {
+        id: db.messages.length + 1,
+        senderId,
+        receiverId,
+        content: (' ' + message.content).slice(1),
+        flag: "none"
+    };
+
+    db.messages.push(forwardedMessage);
+
+    res.json({
+        message: "SECURE ACTION: message forwarded.",
+        data: forwardedMessage
+    });
+}
+
+function secureViewInbox(userId, res) {
+    const userMessages = db.messages.filter(
+        m => m.senderId === userId || m.receiverId === userId
+    );
+
+    res.json({
+        message: "SECURE ACTION: inbox for current user.",
+        data: userMessages
+    });
+}

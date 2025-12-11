@@ -3,18 +3,21 @@
     "id": 1,
     "senderId": 1,
     "receiverId": 2,
-    "content": "Hi Sukhpreet!"
+    "content": "Hi Sukhpreet!",
+    "flag": "none"
   },
   {
     "id": 2,
     "senderId": 2,
     "receiverId": 1,
-    "content": "Hey Suiba!"
+    "content": "Hey Suiba!",
+    "flag": "none"
   },
   {
     "id": 3,
     "senderId": 3,
     "receiverId": 1,
-    "content": "Hello Suiba, how is the project going?"
+    "content": "Hello Suiba, how is the project going?",
+    "flag": "none"
   }
 ]
