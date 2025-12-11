@@ -40,20 +40,26 @@ exports.sendMessage = (req, res) => {
 // Define a function to call the corresponding 'action' function based on the action
 exports.handleAction = (req, res) => {
 
+    // Initialise message object 
+    let message = null;
+
     // Get the currently logged in userId
     const loggedInId = req.session.userId;
 
     // Extract values of parameters from the request's body
-    const { action, id, content, flag, targetSenderId} = req.body;
+    const { action, id, content, flag, targetSenderId } = req.body;
 
-    // Find the message object corresponding to the provided id
-    const message = db.messages.find(message => message.id == parseInt(id));
+    // Retrieve message object if messageId is provided in the request body
+    if (id) {
+        // Find the message object corresponding to the provided id
+        message = db.messages.find(message => message.id == parseInt(id));
 
-    // Return ERROR 404: NOT FOUND if message object cannot be found
-    if (!message) {
-        res.status(404).json({
-            error: `Couldn't find message with messageID ${id}.`
-        })
+        // Return ERROR 404: NOT FOUND if message object cannot be found
+        if (!message) {
+            res.status(404).json({
+                error: `Couldn't find message with messageID ${id}.`
+            })
+        }
     }
 
     // Handle different use cases once message object is found
@@ -66,6 +72,8 @@ exports.handleAction = (req, res) => {
             return flagMessage(message, flag, res);
         case "forward":
             return forwardMessage(message, loggedInId, parseInt(targetSenderId), res);
+        case "inbox":
+            return viewInbox(req, res);
         case "default":
             res.status(404).json({ error: "Specified action not found" });
     };
@@ -77,8 +85,8 @@ function editMessage(message, content, res) {
     // Update the message content to the given content
     message.content = content;
 
-    // Save updated message object
-    const editedMessage = message;
+    // Save a copy of the updated message object
+    const editedMessage = { ...message };
 
     // Return response showing message was edited
     res.json({
@@ -107,7 +115,7 @@ function flagMessage(message, flag, res) {
     message.flag = flag
 
     // Save copy of edited message
-    const flaggedMessage = message
+    const flaggedMessage = { ...message }
 
     // Return response showing message was flagged
     res.json({
@@ -119,23 +127,34 @@ function flagMessage(message, flag, res) {
 // Handles Forward action
 function forwardMessage(message, senderId, receiverId, res) {
 
-    console.log("Sender ID", senderId);
-    console.log("Receiver ID", receiverId);
     // Generate message that will be forward to user to store it in db.js
-    const newMessage = {
-        id : db.messages.length + 1,
+    const forwardedMessage = {
+        id: db.messages.length + 1,
         senderId,
         receiverId,
-        content : message.content,
-        flag : "none"
+        content: (' ' + message.content).slice(1),
+        flag: "none"
     }
 
     // Add forwarded message to current message in the db
-    db.messages.push(newMessage);
+    db.messages.push(forwardedMessage);
 
     // Return response showing message was forwarded
     res.json({
         message: "VULNERABLE ACTION: UNAUTHORISED FORWARDING",
-        data: db.messages
+        data: forwardedMessage
+    })
+}
+
+// Handles the View Inbox action
+function viewInbox(req, res) {
+
+    // Make a copy of the current messages in the database
+    const messagesCopy = { ...db.messages }
+
+    // Return all the messages currently in the system's database without filtering those of the logged in user
+    res.json({
+        message: "VULNERABLE ACTION: RETRIEVING ALL MESSAGES IN DB",
+        data: messagesCopy
     })
 }
