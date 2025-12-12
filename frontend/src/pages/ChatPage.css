@@ -61,12 +61,13 @@
 /* Code credit for Chat bubble design: https://codepen.io/samuelkraft/pen/kYrjwX */
 .chat-thread {
     width: 500px;
-    height : 80%;
-    padding-bottom: 80px;
+    height : 300px;
+    padding : 20px;
     margin: 50px auto;
     display: flex;
     flex-direction: column;
-    position: relative;
+    overflow-y: scroll;
+    scrollbar-width: none;
 }
 
 .chat-bubble {
@@ -139,9 +140,15 @@
     z-index: 5;
 }
 
+.col-2 {
+    height : 550px;
+    padding : 20px;
+    position: relative;
+}
+
 .chat-input-box {
   position: absolute;
-  bottom: 20px;
+  bottom: 50px;
   left: 0;
   width: 100%;
   padding: 10px 20px;

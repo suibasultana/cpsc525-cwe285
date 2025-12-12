@@ -2,6 +2,9 @@
 import { useEffect, useState } from "react";
 import TextField from "@mui/material/TextField";
 import Avatar from '@mui/material/Avatar';
+import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
+import AttachFileIcon from '@mui/icons-material/AttachFile';
+import SendIcon from '@mui/icons-material/Send';
 import "./ChatPage.css"
 
 export default function ChatPage() {
@@ -16,11 +19,13 @@ export default function ChatPage() {
   const avatar2 = '/icons/avatar-2.png';
   const avatar3 = '/icons/avatar-3.png';
 
-  const SERVER = "http://localhost:4000/messages"
+  const SERVER = "http://localhost:4000"
+
   const [mode, setmode] = useState("vulnerable");
   const [chats, setChats] = useState([]);
   const [activeChat, setActiveChat] = useState(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [message, setMessage] = useState("");
 
   const handleClick = (chat, index) => {
     setActiveChat(chat);
@@ -28,10 +33,52 @@ export default function ChatPage() {
     console.log(chat);
   }
 
+  const handleSend = async () => {
+
+    try {
+      const response = await fetch(`${SERVER}/messages/${mode}/action`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          id: activeChat.id,
+          action: "respond",
+          content: message
+        })
+      });
+
+      const data = await response.json();
+      const newMessage = data.data;
+
+      console.log("Response from backend: ", newMessage);
+
+      // Update chat to reflect the new data from the backend
+      setChats(prev =>
+        prev.map(c =>
+          c.id === activeChat.id
+            ? { ...c, conversation: [...c.conversation, newMessage] }
+            : c
+        )
+      );
+
+      // update active chat too
+      setActiveChat(prev => ({
+        ...prev,
+        conversation: [...prev.conversation, newMessage]
+      }));
+
+      setMessage("");
+
+    } catch (err) {
+      console.log(`Error occured while sending message to ${userMap[activeChat.receiverId]} : ${err}`)
+    }
+
+  }
+
   useEffect(() => {
     const fetchUserInbox = async () => {
       try {
-        const response = await fetch(`${SERVER}/${mode}/action`, {
+        const response = await fetch(`${SERVER}/messages/${mode}/action`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
@@ -104,7 +151,7 @@ export default function ChatPage() {
           <div>
           </div>
         </div>
-        <div className="chat-thread">
+        <div className="col-2">
           {activeChat && (
             <>
               <div className="thread-user">
@@ -115,18 +162,38 @@ export default function ChatPage() {
                 />
                 <h4 style={{ marginLeft: "10px", margin: "0" }}>{userMap[activeChat.receiverId]}</h4>
               </div>
-              {activeChat && activeChat.conversation.map((conv) => (
-                <p className={conv.senderId ? "chat-bubble sender" : "chat-bubble receiver"}>{conv.content}</p>
-              ))}
+              <div className="chat-thread">
+                {activeChat && activeChat.conversation.map((conv, index) => (
+                  <p key={index} className={index % 2 === 0 ? "chat-bubble sender" : "chat-bubble receiver"}>{conv.content}</p>
+                ))}
+              </div>
               <div className="chat-input-box">
                 <TextField
-                  placeholder="Type a message"
+                  placeholder="Write a message..."
                   variant="outlined"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleSend();
+                  }}
                   sx={{
                     width: "100%",
                     "& .MuiOutlinedInput-root": {
                       borderRadius: "20px",
                       backgroundColor: "#f7f4fb"
+                    },
+                  }}
+                  slotProps={{
+                    input: {
+                      endAdornment: (
+                        <>
+                          <div style={{ color: "#b3b3b3", marginRight: "8px", display: "flex", flexDirection: "row", rowGap: "4px" }}>
+                            <EmojiEmotionsIcon style={{ cursor: "pointer" }} />
+                            <AttachFileIcon style={{ cursor: "pointer" }} />
+                          </div>
+                          <SendIcon style={{ color: "#9c6be8", cursor: "pointer" }} onClick={handleSend} />
+                        </>
+                      ),
                     },
                   }}
                 />

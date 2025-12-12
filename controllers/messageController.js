@@ -47,7 +47,7 @@ exports.handleAction = (req, res) => {
     const loggedInId = req.session.userId;
 
     // Extract values of parameters from the request's body
-    const { action, id, content, flag, targetSenderId } = req.body;
+    const { action, id, content, flag, targetReceiverId } = req.body;
 
     // Retrieve message object if messageId is provided in the request body
     if (id) {
@@ -66,12 +66,14 @@ exports.handleAction = (req, res) => {
     switch (action) {
         case "edit":
             return editMessage(message, content, res);
+        case "respond":
+            return respondMessage(message, content, loggedInId, res);
         case "delete":
             return deleteMessage(id, res);
         case "flag":
             return flagMessage(message, flag, res);
         case "forward":
-            return forwardMessage(message, loggedInId, parseInt(targetSenderId), res);
+            return forwardMessage(message, loggedInId, parseInt(targetReceiverId), res);
         case "inbox":
             return viewInbox(req, res);
         case "default":
@@ -94,6 +96,24 @@ function editMessage(message, content, res) {
         data: editedMessage
     });
 };
+
+function respondMessage(message, content, senderId, res) {
+
+    // Add response to current conversation
+    const newResponse = {
+        senderId,
+        content
+    }
+
+    message.conversation.push(newResponse);
+    const updatedMessage = {... message }
+
+    // Return response showing response was received
+    res.json({
+        message: "VULNERABLE ACTION: UNAUTHORIZED RESPONSE",
+        data: updatedMessage
+    });
+}
 
 // Handles Delete action
 function deleteMessage(id, res) {
@@ -232,7 +252,7 @@ exports.handleActionSecure = (req, res) => {
 
     let message = null;
 
-    const { action, id, content, flag, targetSenderId } = req.body;
+    const { action, id, content, flag, targetReceiverId } = req.body;
 
     // Actions that need a specific message.
     const actionsRequiringMessage = ["edit", "delete", "flag", "forward"];
@@ -263,7 +283,7 @@ exports.handleActionSecure = (req, res) => {
             return secureFlagMessage(message, flag, res);
 
         case "forward":
-            return secureForwardMessage(message, userId, parseInt(targetSenderId, 10), res);
+            return secureForwardMessage(message, userId, parseInt(targetReceiverId, 10), res);
 
         case "inbox":
             return secureViewInbox(userId, res);
