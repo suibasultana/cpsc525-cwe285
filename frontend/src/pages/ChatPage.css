@@ -1,0 +1,149 @@
+:root {
+    --send-bg: #8D6ECF;
+    --receive-bg: #f7f4fb;
+    --chat-background: white;
+}
+
+.chat-page {
+    background-color: #f6f1fd;
+    height: 100vh;
+    padding: 40px;
+    font-size: 22px;
+}
+
+.chat-container {
+    background-color: #fefeff;
+    height: 85vh;
+    padding: 15px;
+    border-radius: 10px;
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+}
+
+.chat-heading {
+    color: #180E41;
+    font-size: 25px;
+}
+
+.col-1 {
+    padding: 20px;
+}
+
+.inbox {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.chat {
+    display: flex;
+    flex-direction: row;
+    padding: 15px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.active-chat {
+    background-color: #eeecfb;
+    border-radius: 20px;
+}
+
+.icon {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.user {
+    margin: 10px
+}
+
+/* Code credit for Chat bubble design: https://codepen.io/samuelkraft/pen/kYrjwX */
+.chat-thread {
+    width: 500px;
+    height : 80%;
+    padding-bottom: 80px;
+    margin: 50px auto;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.chat-bubble {
+    max-width: 255px;
+    font-size: 18px;
+    word-wrap: break-word;
+    margin-bottom: 12px;
+    line-height: 24px;
+    position: relative;
+    padding: 10px 20px;
+    border-radius: 25px;
+
+    &:before,
+    &:after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        height: 25px;
+    }
+}
+
+.sender {
+    color: white;
+    background: var(--send-bg);
+    align-self: flex-end;
+
+    &:before {
+        right: -7px;
+        width: 20px;
+        background-color: var(--send-bg);
+        border-bottom-left-radius: 16px 14px;
+    }
+
+    &:after {
+        right: -26px;
+        width: 26px;
+        background-color: var(--chat-background);
+        border-bottom-left-radius: 10px;
+    }
+}
+
+.receiver {
+    background: var(--receive-bg);
+    color: black;
+    align-self: flex-start;
+
+    &:before {
+        left: -7px;
+        width: 20px;
+        background-color: var(--receive-bg);
+        border-bottom-right-radius: 16px 14px;
+    }
+
+    &:after {
+        left: -26px;
+        width: 26px;
+        background-color: var(--chat-background);
+        border-bottom-right-radius: 10px;
+    }
+}
+
+.thread-user {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    padding : 10px;
+    border-radius: 20px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
+    background: white;
+    z-index: 5;
+}
+
+.chat-input-box {
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  width: 100%;
+  padding: 10px 20px;
+  background: transparent;
+}

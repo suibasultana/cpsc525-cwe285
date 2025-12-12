@@ -1,99 +1,100 @@
 /* ===== BACKGROUND ===== */
 .login-page {
-    height: 100vh;
-    width: 100%;
-    background-color: #d7c5ff;  /* Sharper purple shade */
-  
-    /* Envelope emoji pattern (bigger spacing) */
-    background-image: url("data:image/svg+xml;utf8,\
+  height: 100vh;
+  width: 100%;
+  background-color: #d7c5ff;
+  /* Sharper purple shade */
+
+  /* Envelope emoji pattern (bigger spacing) */
+  background-image: url("data:image/svg+xml;utf8,\
     <svg xmlns='http://www.w3.org/2000/svg' width='60' height='60'>\
       <text x='0' y='30' font-size='28'>✉️</text>\
     </svg>");
-  
-    background-repeat: repeat;
-    background-size: 120px 120px; /* MORE spacing → fewer envelopes */
-  
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  /* ===== LOGIN CARD ===== */
-  .login-card {
-    background: white;
-    width: 460px;
-    padding: 45px 50px;
-    border-radius: 32px;
-    box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.2);
-    text-align: center;
-  }
-  
-  /* ===== ICON CIRCLE ===== */
-  .login-logo {
-    background: #6d5dfc;
-    color: white;
-    font-size: 32px;
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 25px auto;
-  }
-  
-  /* ===== TITLE ===== */
-  .login-title {
-    font-size: 34px;
-    margin-bottom: 35px;
-    color: #222;
-  }
-  
-  /* ===== INPUT FIELDS ===== */
-  .login-input {
-    width: 100%;
-    padding: 16px;
-    font-size: 17px;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    margin-bottom: 22px;
-    outline: none;
-    background: #fafafa;
-    transition: 0.2s ease;
-  }
-  
-  .login-input:focus {
-    border-color: #6d5dfc;
-    box-shadow: 0px 0px 6px rgba(109, 93, 252, 0.6);
-  }
-  
-  /* ===== BUTTON ===== */
-  .login-button {
-    width: 100%;
-    padding: 16px;
-    font-size: 18px;
-    background: #6d5dfc;
-    color: white;
-    border: none;
-    border-radius: 14px;
-    cursor: pointer;
-    margin-top: 12px;
-    transition: 0.2s ease;
-  }
-  
-  .login-button:hover {
-    background: #5a4ce0;
-  }
-  
-  /* ===== SIGNUP TEXT ===== */
-  .signup-text {
-    margin-top: 22px;
-    font-size: 15px;
-  }
-  
-  .signup-text span {
-    color: #6d5dfc;
-    font-weight: bold;
-    cursor: pointer;
-  }
-  
+
+  background-repeat: repeat;
+  background-size: 120px 120px;
+  /* MORE spacing → fewer envelopes */
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ===== LOGIN CARD ===== */
+.login-card {
+  background: white;
+  width: 460px;
+  padding: 45px 50px;
+  border-radius: 32px;
+  box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+/* ===== ICON CIRCLE ===== */
+.login-logo {
+  background: #6d5dfc;
+  color: white;
+  font-size: 32px;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 25px auto;
+}
+
+/* ===== TITLE ===== */
+.login-title {
+  font-size: 34px;
+  margin-bottom: 35px;
+  color: #222;
+}
+
+/* ===== INPUT FIELDS ===== */
+.login-input {
+  width: 100%;
+  padding: 16px;
+  font-size: 17px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  margin-bottom: 22px;
+  outline: none;
+  background: #fafafa;
+  transition: 0.2s ease;
+}
+
+.login-input:focus {
+  border-color: #6d5dfc;
+  box-shadow: 0px 0px 6px rgba(109, 93, 252, 0.6);
+}
+
+/* ===== BUTTON ===== */
+.login-button {
+  width: 100%;
+  padding: 16px;
+  font-size: 18px;
+  background: #6d5dfc;
+  color: white;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: 0.2s ease;
+}
+
+.login-button:hover {
+  background: #5a4ce0;
+}
+
+/* ===== SIGNUP TEXT ===== */
+.signup-text {
+  margin-top: 22px;
+  font-size: 15px;
+}
+
+.signup-text span {
+  color: #6d5dfc;
+  font-weight: bold;
+  cursor: pointer;
+}
