@@ -25,11 +25,11 @@ router.post("/secure/action", messages.handleActionSecure);
  */
 
 // Vulnerable route since no authorization middleware
-router.get("/:id", messages.viewMessage);
+router.get("/vulnerable/:id", messages.viewMessage);
 
-router.post("/", messages.sendMessage);
+router.post("/vulnerable/", messages.sendMessage);
 
 // Vulnerable route to handle the different actions passed to the server
-router.post("/action", messages.handleAction);
+router.post("/vulnerable/action", messages.handleAction);
 
 module.exports = router;

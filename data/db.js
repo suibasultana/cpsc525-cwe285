@@ -12,8 +12,27 @@ module.exports = {
     ],
 
     messages: [
-        { id: 1, senderId: 1, receiverId: 2, content: "Hi Sukhpreet!", flag: "none" },
-        { id: 2, senderId: 2, receiverId: 1, content: "Hey Suiba!", flag: "none" },
-        { id: 3, senderId: 3, receiverId: 1, content: "Hello Suiba, how is the project going?", flag: "none"}
+        {
+            id: 1, senderId: 1, receiverId: 2, conversation: [
+                { senderId: 1, content: "Hi Sukhpreet!" },
+                { receiverId: 2, content: "Hey Suiba!" },
+                { senderId: 1, content: "How are you doing today?" },
+                { receiverId: 2, content: "I'm doing great, you?" }
+            ], flag: "none"
+        },
+        {
+            id: 2, senderId: 2, receiverId: 1, conversation: [
+                { senderId: 2, content: "Hello!" },
+                { receiverId: 1, content: "Hi Suiba!" },
+                { senderId: 2, content: "What's up today?" }
+            ], flag: "none"
+        },
+        {
+            id: 3, senderId: 3, receiverId: 1, conversation: [
+                { senderId: 3, content: "Hello Suiba, how is the project going?" },
+                { receiverId: 1, content: "Pretty good so far!" },
+                { senderId: 3, content: "Nice! Keep me posted." }
+            ], flag: "none"
+        }
     ]
 };

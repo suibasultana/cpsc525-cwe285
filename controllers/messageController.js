@@ -150,6 +150,8 @@ function forwardMessage(message, senderId, receiverId, res) {
 // Handles the View Inbox action.
 function viewInbox(req, res) {
 
+    console.log("VIEW BOX ACTION HIT!")
+    
     // Making a copy of the current messages in the database.
     const messagesCopy = { ...db.messages };
 
