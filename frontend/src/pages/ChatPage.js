@@ -2,10 +2,14 @@
 import { useEffect, useState } from "react";
 import TextField from "@mui/material/TextField";
 import Avatar from '@mui/material/Avatar';
+import FormControlLabel from '@mui/material/FormControlLabel';
+
+// Import icons for ChatPage UI
 import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
+import ModeEditIcon from '@mui/icons-material/ModeEdit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import SendIcon from '@mui/icons-material/Send';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 
 import "./ChatPage.css"
@@ -24,7 +28,7 @@ export default function ChatPage() {
 
   const SERVER = "http://localhost:4000"
 
-  const [mode, setMode] = useState("secure");
+  const [mode, setMode] = useState("vulnerable");
   const [chats, setChats] = useState([]);
   const [activeChat, setActiveChat] = useState(null);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -43,7 +47,6 @@ export default function ChatPage() {
   const handleSend = async () => {
 
     try {
-      console.log("Message ID: ", activeChat.id);
 
       const response = await fetch(`${SERVER}/messages/${mode}/action`, {
         method: "POST",
@@ -70,7 +73,7 @@ export default function ChatPage() {
         )
       );
 
-      // update active chat too
+      // Update active chat with new response
       setActiveChat(prev => ({
         ...prev,
         conversation: [...prev.conversation, newMessage]
@@ -81,6 +84,42 @@ export default function ChatPage() {
     } catch (err) {
       console.log(`Error occured while sending message to ${userMap[activeChat.receiverId].name} : ${err}`)
     }
+
+  }
+
+  const handleDelete = async (activeChat, content) => {
+
+    console.log("Message to be deleted: ", content);
+    console.log("Current chat object id: ", activeChat.id);
+
+    const response = await fetch(`${SERVER}/messages/${mode}/action`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        id: activeChat.id,
+        action: "delete",
+        content
+      })
+    });
+
+    const data = await response.json();
+    const updatedConversation = data.data;
+
+    // Update chat to reflect the new data from the backend
+    setChats(prev =>
+      prev.map(c =>
+        c.id === activeChat.id
+          ? { ...c, conversation: c.conversation.filter(msg => msg.content !== content) }
+          : c
+      )
+    );
+
+    // Update active chat 
+    setActiveChat(prev => ({
+      ...prev,
+      conversation: prev.conversation.filter(msg => msg.content !== content)
+    }));
 
   }
 
@@ -157,7 +196,7 @@ export default function ChatPage() {
             )))}
           </div>
           <div className="toggle-switch">
-            <FormControlLabel control={<Switch defaultChecked />} label="Secure Mode" onClick={handleToggle} />
+            <FormControlLabel control={<Switch />} label="Secure Mode" onClick={handleToggle} />
           </div>
         </div>
         <div className="col-2">
@@ -173,7 +212,22 @@ export default function ChatPage() {
               </div>
               <div className="chat-thread">
                 {activeChat && activeChat.conversation.map((conv, index) => (
-                  <p key={index} className={index % 2 === 0 ? "chat-bubble sender" : "chat-bubble receiver"}>{conv.content}</p>
+                  <>
+                    <p key={index} className={conv.senderId === activeChat.senderId ? "chat-bubble sender" : "chat-bubble receiver"}>{conv.content}</p>
+                    <div className={conv.senderId === activeChat.senderId ? "message-buttons end" : "message-buttons start"}>
+                      <ModeEditIcon
+                        sx={{
+                          color: "#b3b3b3",
+                          cursor: "pointer"
+                        }} />
+                      <DeleteIcon
+                        onClick={() => handleDelete(activeChat, conv.content)}
+                        sx={{
+                          color: "#d64a5b",
+                          cursor: "pointer"
+                        }} />
+                    </div>
+                  </>
                 ))}
               </div>
               <div className="chat-input-box">
@@ -218,8 +272,8 @@ export default function ChatPage() {
                     avatar3}
                 sx={{ width: 200, height: 200 }}
               />
-              <h3 style={{ margin : "0" }}>{userMap[activeChat.receiverId].name}</h3>
-              <p style={{ margin : "0 0 20px 0" }}>{userMap[activeChat.receiverId].email}</p>
+              <h3 style={{ margin: "0" }}>{userMap[activeChat.receiverId].name}</h3>
+              <p style={{ margin: "0 0 20px 0" }}>{userMap[activeChat.receiverId].email}</p>
               <div className="action-buttons">
                 <button className="call-btn">Call</button>
                 <button className="block-btn">Block</button>

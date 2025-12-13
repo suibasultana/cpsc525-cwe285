@@ -234,3 +234,15 @@
 .block-btn:hover {
   background-color: #ffd7de;
 }
+
+.start {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+}
+
+.end {
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+}

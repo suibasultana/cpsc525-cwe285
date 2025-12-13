@@ -69,7 +69,7 @@ exports.handleAction = (req, res) => {
         case "respond":
             return respondMessage(message, content, loggedInId, res);
         case "delete":
-            return deleteMessage(id, res);
+            return deleteMessage(message, content, res);
         case "flag":
             return flagMessage(message, flag, res);
         case "forward":
@@ -115,15 +115,15 @@ function respondMessage(message, content, senderId, res) {
 }
 
 // Handles Delete action
-function deleteMessage(id, res) {
+function deleteMessage(message, content, res) {
 
     // Delete message object from messages array with corresponding id
-    const editedMessages = db.messages.filter(m => m.id !== parseInt(id));
+    const updatedConversation = message.conversation.filter(m => m.content !== content);
 
     // Return response showing message was deleted
     res.json({
         message: "VULNERABLE ACTION: UNAUTHORIZED DELETION",
-        data: editedMessages
+        data: updatedConversation
     });
 };
 
@@ -277,7 +277,7 @@ exports.handleActionSecure = (req, res) => {
             return secureRespondMessage(message, content, userId, res);
 
         case "delete":
-            return secureDeleteMessage(id, res);
+            return secureDeleteMessage(message, content, res);
 
         case "flag":
             return secureFlagMessage(message, flag, res);
@@ -331,16 +331,15 @@ function secureRespondMessage(message, content, senderId, res) {
     });
 }
 
-function secureDeleteMessage(id, res) {
-    const messageId = parseInt(id, 10);
+function secureDeleteMessage(message, content, res) {
 
-    const index = db.messages.findIndex(m => m.id === messageId);
+    const index = message.conversation.findIndex(ch => ch.content === content);
     if (index === -1) {
         return res.status(404).json({ error: "Message not found." });
     }
 
-    const deleted = db.messages[index];
-    db.messages.splice(index, 1);
+    const deleted = message.conversation[index];
+    message.conversation.splice(index, 1);
 
     res.json({
         message: "SECURE ACTION: message deleted.",
