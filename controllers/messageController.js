@@ -106,12 +106,11 @@ function respondMessage(message, content, senderId, res) {
     }
 
     message.conversation.push(newResponse);
-    const updatedMessage = {... message }
 
     // Return response showing response was received
     res.json({
         message: "VULNERABLE ACTION: UNAUTHORIZED RESPONSE",
-        data: updatedMessage
+        data: newResponse
     });
 }
 
@@ -169,8 +168,6 @@ function forwardMessage(message, senderId, receiverId, res) {
 
 // Handles the View Inbox action.
 function viewInbox(req, res) {
-
-    console.log("VIEW BOX ACTION HIT!")
     
     // Making a copy of the current messages in the database.
     const messagesCopy = { ...db.messages };
@@ -255,7 +252,7 @@ exports.handleActionSecure = (req, res) => {
     const { action, id, content, flag, targetReceiverId } = req.body;
 
     // Actions that need a specific message.
-    const actionsRequiringMessage = ["edit", "delete", "flag", "forward"];
+    const actionsRequiringMessage = ["edit", "respond", "delete", "flag", "forward"];
 
     if (actionsRequiringMessage.includes(action)) {
         if (!id) {
@@ -275,6 +272,9 @@ exports.handleActionSecure = (req, res) => {
     switch (action) {
         case "edit":
             return secureEditMessage(message, content, res);
+
+        case "respond":
+            return secureRespondMessage(message, content, userId, res);
 
         case "delete":
             return secureDeleteMessage(id, res);
@@ -308,6 +308,26 @@ function secureEditMessage(message, content, res) {
     res.json({
         message: "SECURE ACTION: message edited.",
         data: editedMessage
+    });
+}
+
+function secureRespondMessage(message, content, senderId, res) {
+    if (!content) {
+        return res.status(400).json({ error: "A response is required to continue the conversation." });
+    }
+
+    // Add response to current conversation
+    const newResponse = {
+        senderId,
+        content
+    }
+
+    message.conversation.push(newResponse);
+
+    // Return response showing response was received
+    res.json({
+        message: "SECURE ACTION: response sent",
+        data: newResponse
     });
 }
 
