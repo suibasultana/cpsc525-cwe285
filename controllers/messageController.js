@@ -383,8 +383,13 @@ function secureForwardMessage(message, senderId, receiverId, res) {
 }
 
 function secureViewInbox(userId, res) {
+    // const userMessages = db.messages.filter(
+    //     m => m.senderId === userId || m.receiverId === userId
+    // );
+
+    // Updated filter to return inbox of only the sender
     const userMessages = db.messages.filter(
-        m => m.senderId === userId || m.receiverId === userId
+        m => m.senderId === userId 
     );
 
     res.json({
