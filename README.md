@@ -1,4 +1,29 @@
-# cpsc525-cwe285
-CPSC 525 Final Project: A deliberately vulnerable application demonstrating CWE-285 (Improper Authorization). Includes insecure implementation, exploitation example, fixed code, and documentation.
+## Vulnerability Demonstrated
 
+- CWE ID: CWE-285 – Improper Authorization
+- Description: The application allows authenticated users to access resources
+  (messages) that they do not own by directly modifying resource identifiers
+  in the URL.
+
+## Tech Stack
+
+Frontend:
+- React
+- CSS
+
+Backend:
+- Node.js
+- Express
+- express-session
+
+Other:
+- In-memory database (for demonstration purposes)
+
+## How to Run the Project
+
+### Backend
+```bash
+cd cpsc525-cwe285
+npm install
+node server.js
 
