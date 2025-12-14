@@ -1,5 +1,3 @@
-console.log("LOGIN ROUTE HIT!");
-
 const db = require("../data/db");
 
 exports.login = (req, res) => {
